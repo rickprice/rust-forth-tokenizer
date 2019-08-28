@@ -1,0 +1,16 @@
+[package]
+name = "rust-forth-tokenizer"
+version = "0.0.1"
+authors = ["Frederick Price <rprice@pricemail.ca>"]
+edition = "2018"
+license = "MIT"
+description = "A Forth tokenizer written in Rust. Currently a stub, coming soon..."
+homepage = "https://github.com/rickprice/rust-forth-tokenizer"
+repository = "https://github.com/rickprice/rust-forth-tokenizer"
+keywords = ["forth","tokenizer"]
+categories = ["embedded"]
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[features]

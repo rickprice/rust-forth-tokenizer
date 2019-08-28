@@ -1,2 +1,2 @@
 # rust-forth-tokenizer
-A Forth tokenizer written in Forth
+A Forth tokenizer written in Rust
