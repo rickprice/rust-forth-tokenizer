@@ -1,42 +1,26 @@
-use rust_forth_tokenizer::ForthLexerToken;
 use logos::Logos;
+use rust_forth_tokenizer::ForthLexerToken;
 
+use std::env;
 use std::fs;
 
 fn main() {
-    let mut lexer = ForthLexerToken::lexer("Create ridiculously fast Lexers.");
+    let args: Vec<String> = env::args().collect();
+    for file in &args[1..] {
+        let file_string = fs::read_to_string(file).expect("Failure opening file");
 
-    assert_eq!(lexer.token, ForthLexerToken::Text);
-    assert_eq!(lexer.slice(), "Create");
-    assert_eq!(lexer.range(), 0..6);
+        let mut lexer = ForthLexerToken::lexer(&file_string[..]);
 
-    lexer.advance();
+        loop {
+            lexer.advance();
 
-    assert_eq!(lexer.token, ForthLexerToken::Text);
-    assert_eq!(lexer.slice(), "ridiculously");
-    assert_eq!(lexer.range(), 7..19);
+            println!("Token: {:?} Text: {} Range: {:?}", lexer.token, lexer.slice(),lexer.range());
 
-    lexer.advance();
-
-    assert_eq!(lexer.token, ForthLexerToken::Fast);
-    assert_eq!(lexer.slice(), "fast");
-    assert_eq!(lexer.range(), 20..24);
-
-    lexer.advance();
-
-    assert_eq!(lexer.token, ForthLexerToken::Text);
-    assert_eq!(lexer.slice(), "Lexers");
-    assert_eq!(lexer.range(), 25..31);
-
-    lexer.advance();
-
-    assert_eq!(lexer.token, ForthLexerToken::Period);
-    assert_eq!(lexer.slice(), ".");
-    assert_eq!(lexer.range(), 31..32);
-
-    lexer.advance();
-
-    assert_eq!(lexer.token, ForthLexerToken::End);
+            if lexer.token == ForthLexerToken::End {
+                break;
+            }
+        }
+    }
 }
 
 /*
@@ -144,7 +128,7 @@ fn run() -> Result<(), ForthError> {
         let n = rf.pop_stack().unwrap();
 
         assert_eq!(n, 1332);
-    
+
     Ok(())
 }
 
