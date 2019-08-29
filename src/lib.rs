@@ -44,7 +44,7 @@ pub enum ForthLexerToken {
     #[token = ";"]
     SemiColon,
 
-    #[regex = "[a-zA-Z0-<>9|+-/*_{}#$=!@\"\\[\\]()?']+"]
+    #[regex = "[a-zA-Z0-<>9|+-/*_{}#$=!@\"\\[\\]()?'&%~]+"]
     Command,
 
     #[regex = "[0-9]+"]
