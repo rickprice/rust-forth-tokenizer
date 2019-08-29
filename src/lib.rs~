@@ -29,23 +29,18 @@ pub enum ForthLexerToken {
     #[error]
     Error,
 
-    #[regex = "(.*)"]
-    Comment,
-
-    #[regex = "\\{.*\\}"]
-    LocalVariableDefinition,
-
     #[token = ":"]
     Colon,
 
     #[token = ";"]
     SemiColon,
 
-    #[regex = "[a-zA-Z][a-zA-Z0-<>9|+-/*_]+"]
+    #[regex = "[a-zA-Z0-<>9|+-/*]+"]
     Command,
 
     #[regex = "[0-9]+"]
     Number,
+
 }
 
 // This macro lets you statically initialize a hashmap
