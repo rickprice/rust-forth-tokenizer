@@ -29,14 +29,17 @@ pub enum ForthLexerToken {
     #[error]
     Error,
 
-    #[regex = "\\\\.*\n"]
+    #[regex = r"\\.*\n"]
     SingleLineComment,
 
-    #[regex = "\\(.*\\)"]
+    #[regex = r"\(.*\)"]
     Comment,
 
-    #[regex = "\\{.*\\}"]
+    #[regex = r"\{.*\}"]
     LocalVariableDefinition,
+
+    #[token = "\r"]
+    LineReturn,
 
     #[token = ":"]
     Colon,
@@ -44,7 +47,7 @@ pub enum ForthLexerToken {
     #[token = ";"]
     SemiColon,
 
-    #[regex = "[a-zA-Z0-<>9|+-/*_{}#$=!@\"\\[\\]()?'&%~]+"]
+    #[regex = r"[a-zA-Z0-<>9|+-/*_#$=!@\[\]?&%~]+"]
     Command,
 
     #[regex = "[0-9]+"]
