@@ -17,22 +17,38 @@ impl SpaceCounter {
     }
 }
 
+/// This Enum lists the token types that are used by the Forth interpreter
+#[derive(Debug)]
+pub enum ForthToken {
+    Comment(String),
+    Number(i64),
+    ForthWord(String),
+    Colon,
+    SemiColon,
+    End,
+    Error(String),
+    DeleteMe(String),
+    DeleteMeLocalDef(String),
+}
+
 %%
 %class Lexer
-%result_type i32
+%result_type ForthToken
 %field SpaceCounter space_counter
 
-\\.*$                  println!("Comment: '{}'", self.yytext()); return Ok(1i32);
-;.*$                   println!("Comment2: '{}'", self.yytext()); return Ok(2i32);
-{.*}                   println!("Comment3: '{}'", self.yytext()); return Ok(3i32);
-\(.*\)                 println!("Local Variable Def: '{}'", self.yytext()); return Ok(4i32);
+\\.*$                  return Ok(ForthToken::Comment(self.yytext().clone()));
+;.*$                   return Ok(ForthToken::Comment(self.yytext().clone()));
+{.*}                   return Ok(ForthToken::Comment(self.yytext().clone()));
+\(.*\)                 return Ok(ForthToken::DeleteMeLocalDef(self.yytext().clone()));
 \n                     { self.space_counter.increment_space(); }
 \t                     { self.space_counter.increment_space(); }
 \r                     { self.space_counter.increment_space(); }
 " "                    { self.space_counter.increment_space(); }
-[a-zA-Z][a-zA-Z_0-9{}+\-\.#@$]*     println!("'{}'", self.yytext()); return Ok(10i32);
-[0-9]+                 println!("'{}'", self.yytext()); return Ok(11i32);
-<<EOF>>                println!("normal EOF");
+[a-zA-Z_0-9{}+\-\.#@$?]+     return Ok(ForthToken::ForthWord(self.yytext()));
+[0-9-]+                  return Ok(ForthToken::Number(self.yytext().parse::<i64>().expect("Unexpected failure converting number")));
+:                       return Ok(ForthToken::Colon);
+;                       return Ok(ForthToken::SemiColon);
+<<EOF>>                 return Ok(ForthToken::End);
 %%
 
     pub fn remain(&self) -> usize {
