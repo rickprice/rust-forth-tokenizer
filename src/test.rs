@@ -17,6 +17,20 @@ impl SpaceCounter {
     }
 }
 
+/// This Enum lists the token types that are used by the Forth interpreter
+#[derive(Debug)]
+pub enum ForthToken {
+    Comment(String),
+    Number(i64),
+    ForthWord(String),
+    Colon,
+    SemiColon,
+    End,
+    Error(String),
+    DeleteMe(String),
+    DeleteMeLocalDef(String),
+}
+
 
 #[derive(Debug)]
 pub enum Error {
@@ -43,10 +57,10 @@ pub struct Lexer<'a> {
 }
 
 impl<'a> Lexer<'a> {
-    pub const ZZ_ROW: [usize; 6] = [0, 7, 14, 21, 28, 14];
-    pub const ZZ_TRANS: [i32; 35] = [-1, 1, 2, 2, 2, -1, 3, -1, 2, 4, 2, 2, 2, -1, -1, 2, 2, 2, 2, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, 2, 5, 2, 2, -1];
-    pub const ZZ_ATTR: [i32; 6] = [0, 1, 1, 9, 1, 1];
-    pub const ZZ_ACTION: [i32; 6] = [0, 1, 2, 3, 4, 5];
+    pub const ZZ_ROW: [usize; 14] = [0, 9, 18, 27, 36, 45, 54, 18, 9, 27, 18, 63, 36, 63];
+    pub const ZZ_TRANS: [i32; 72] = [1, 2, 3, 4, 5, 2, 6, 5, 7, 8, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 9, 10, 9, 9, 9, 9, 9, 9, 9, 11, -1, 11, 4, 12, 11, 4, 4, 11, -1, -1, -1, 5, 5, -1, 5, 5, -1, 9, 10, 9, 6, 6, 9, 6, 6, 9, 11, -1, 11, 11, 13, 11, 11, 11, 11];
+    pub const ZZ_ATTR: [i32; 14] = [0, 0, 9, 1, 1, 1, 1, 9, 1, 0, 9, 0, 1, 1];
+    pub const ZZ_ACTION: [i32; 14] = [0, 0, 1, 2, 3, 4, 5, 6, 7, 0, 8, 0, 9, 10];
     pub const ZZ_LEXSTATE: [i32; 2] = [0, 0];
     pub const YYINITIAL: usize = 0;
 
@@ -58,60 +72,89 @@ impl<'a> Lexer<'a> {
         let chars = input.chars();
         let mut cmap: Vec<usize> = Vec::with_capacity(0x110000);
         cmap.resize(0x110000, 0);
-        cmap[32] = 6;
-        cmap[65] = 4;
-        cmap[66] = 4;
-        cmap[67] = 4;
-        cmap[68] = 4;
-        cmap[69] = 4;
-        cmap[70] = 4;
-        cmap[71] = 4;
-        cmap[72] = 4;
-        cmap[73] = 4;
-        cmap[74] = 4;
-        cmap[75] = 4;
-        cmap[76] = 4;
-        cmap[77] = 4;
-        cmap[78] = 4;
-        cmap[79] = 4;
-        cmap[80] = 4;
-        cmap[81] = 4;
-        cmap[82] = 4;
-        cmap[83] = 4;
-        cmap[84] = 4;
-        cmap[85] = 4;
-        cmap[86] = 4;
-        cmap[87] = 4;
-        cmap[88] = 4;
-        cmap[89] = 4;
-        cmap[90] = 4;
-        cmap[95] = 5;
-        cmap[97] = 1;
-        cmap[98] = 2;
-        cmap[99] = 3;
-        cmap[100] = 4;
-        cmap[101] = 4;
-        cmap[102] = 4;
-        cmap[103] = 4;
-        cmap[104] = 4;
-        cmap[105] = 4;
-        cmap[106] = 4;
-        cmap[107] = 4;
-        cmap[108] = 4;
-        cmap[109] = 4;
-        cmap[110] = 4;
-        cmap[111] = 4;
-        cmap[112] = 4;
-        cmap[113] = 4;
-        cmap[114] = 4;
-        cmap[115] = 4;
-        cmap[116] = 4;
-        cmap[117] = 4;
-        cmap[118] = 4;
-        cmap[119] = 4;
-        cmap[120] = 4;
-        cmap[121] = 4;
-        cmap[122] = 4;
+        cmap[9] = 5;
+        cmap[10] = 1;
+        cmap[11] = 1;
+        cmap[12] = 1;
+        cmap[13] = 1;
+        cmap[32] = 5;
+        cmap[35] = 6;
+        cmap[36] = 6;
+        cmap[45] = 7;
+        cmap[46] = 6;
+        cmap[48] = 7;
+        cmap[49] = 7;
+        cmap[50] = 7;
+        cmap[51] = 7;
+        cmap[52] = 7;
+        cmap[53] = 7;
+        cmap[54] = 7;
+        cmap[55] = 7;
+        cmap[56] = 7;
+        cmap[57] = 7;
+        cmap[58] = 8;
+        cmap[59] = 2;
+        cmap[63] = 6;
+        cmap[64] = 6;
+        cmap[65] = 6;
+        cmap[66] = 6;
+        cmap[67] = 6;
+        cmap[68] = 6;
+        cmap[69] = 6;
+        cmap[70] = 6;
+        cmap[71] = 6;
+        cmap[72] = 6;
+        cmap[73] = 6;
+        cmap[74] = 6;
+        cmap[75] = 6;
+        cmap[76] = 6;
+        cmap[77] = 6;
+        cmap[78] = 6;
+        cmap[79] = 6;
+        cmap[80] = 6;
+        cmap[81] = 6;
+        cmap[82] = 6;
+        cmap[83] = 6;
+        cmap[84] = 6;
+        cmap[85] = 6;
+        cmap[86] = 6;
+        cmap[87] = 6;
+        cmap[88] = 6;
+        cmap[89] = 6;
+        cmap[90] = 6;
+        cmap[92] = 6;
+        cmap[95] = 6;
+        cmap[97] = 6;
+        cmap[98] = 6;
+        cmap[99] = 6;
+        cmap[100] = 6;
+        cmap[101] = 6;
+        cmap[102] = 6;
+        cmap[103] = 6;
+        cmap[104] = 6;
+        cmap[105] = 6;
+        cmap[106] = 6;
+        cmap[107] = 6;
+        cmap[108] = 6;
+        cmap[109] = 6;
+        cmap[110] = 6;
+        cmap[111] = 6;
+        cmap[112] = 6;
+        cmap[113] = 6;
+        cmap[114] = 6;
+        cmap[115] = 6;
+        cmap[116] = 6;
+        cmap[117] = 6;
+        cmap[118] = 6;
+        cmap[119] = 6;
+        cmap[120] = 6;
+        cmap[121] = 6;
+        cmap[122] = 6;
+        cmap[123] = 3;
+        cmap[125] = 4;
+        cmap[133] = 1;
+        cmap[8232] = 1;
+        cmap[8233] = 1;
 
 
         Lexer {
@@ -171,7 +214,7 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    pub fn yylex(&mut self) -> Result<i32, Error> {
+    pub fn yylex(&mut self) -> Result<ForthToken, Error> {
         let mut zz_input: i32;
 
         // cached
@@ -237,7 +280,7 @@ impl<'a> Lexer<'a> {
             if zz_input == Lexer::YYEOF && self.zz_start_read == self.zz_current_pos {
                 self.zz_at_eof = true;
                  match self.zz_lexical_state {
-                     _ => { println!("normal EOF"); }
+                     _ => { return Ok(ForthToken::End); }
                  }
 
                 return Err(Error::EOF);
@@ -248,16 +291,26 @@ impl<'a> Lexer<'a> {
                     Lexer::ZZ_ACTION[zz_action as usize]
                 };
                 match action {
-                    1 => { println!("'{}'", self.yytext()); return Ok(2i32); }
-                    6 => { /* nothing */ }
-                    2 => { println!("'{}'", self.yytext()); return Ok(2i32); }
-                    7 => { /* nothing */ }
-                    3 => { { self.space_counter.increment_space(); } }
-                    8 => { /* nothing */ }
-                    4 => { println!("'{}'", self.yytext()); return Ok(2i32); }
-                    9 => { /* nothing */ }
-                    5 => { println!("'{}'", self.yytext()); return Ok(1i32); }
-                    10 => { /* nothing */ }
+                    1 => { { self.space_counter.increment_space(); } }
+                    11 => { /* nothing */ }
+                    2 => { return Ok(ForthToken::SemiColon); }
+                    12 => { /* nothing */ }
+                    3 => { return Ok(ForthToken::ForthWord(self.yytext())); }
+                    13 => { /* nothing */ }
+                    4 => { return Ok(ForthToken::ForthWord(self.yytext())); }
+                    14 => { /* nothing */ }
+                    5 => { return Ok(ForthToken::ForthWord(self.yytext())); }
+                    15 => { /* nothing */ }
+                    6 => { return Ok(ForthToken::Colon); }
+                    16 => { /* nothing */ }
+                    7 => { return Ok(ForthToken::DeleteMeLocalDef(self.yytext().clone())); }
+                    17 => { /* nothing */ }
+                    8 => { return Ok(ForthToken::Comment(self.yytext().clone())); }
+                    18 => { /* nothing */ }
+                    9 => { return Ok(ForthToken::Comment(self.yytext().clone())); }
+                    19 => { /* nothing */ }
+                    10 => { return Ok(ForthToken::Comment(self.yytext().clone())); }
+                    20 => { /* nothing */ }
 
                     _ => {
                         return Err(Error::Unmatch);
