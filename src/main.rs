@@ -15,11 +15,11 @@ fn main() {
             if lex.is_eof() {
                 break;
             }
-/*            
+
             if res.is_err() {
                 break;
             }
-*/
+
             println!("remain '{}' characters", lex.remain());
         }
         println!("space count: {}", lex.get_space_counter().count());
