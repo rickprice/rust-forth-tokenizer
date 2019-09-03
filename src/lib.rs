@@ -20,6 +20,7 @@ struct ForthTokenizer<'a> {
     to_tokenize: &'a str,
     curr: i64,
     next: i64,
+    count: i64,
 }
 
 // The `Iterator` trait only requires a method to be defined for the `next` element.
@@ -31,10 +32,15 @@ impl<'a> Iterator for ForthTokenizer<'a> {
     //     * When the `Iterator` is finished, `None` is returned.
     //     * Otherwise, the next value is wrapped in `Some` and returned.
     fn next(&mut self) -> Option<ForthToken> {
+        if self.count > 5 {
+            return None;
+        }
+
         let new_next = self.curr + self.next;
 
         self.curr = self.next;
         self.next = new_next;
+        self.count += 1;
 
         // Since there's no endpoint to a Fibonacci sequence, the `Iterator`
         // will never return `None`, and `Some` is always returned.
@@ -48,6 +54,7 @@ impl<'a> ForthTokenizer<'a> {
             to_tokenize: to_tokenize,
             curr: 0,
             next: 0,
+            count: 0,
         }
     }
 }
