@@ -1,10 +1,16 @@
 [package]
-name = "example"
+name = "rust-forth-tokenizer"
 version = "0.1.0"
-build = "build.rs"
+authors = ["Frederick Price <rprice@pricemail.ca>"]
+edition = "2018"
+license = "MIT"
+description = "A Forth tokenizer written in Rust."
+homepage = "https://github.com/rickprice/rust-forth-tokenizer"
+repository = "https://github.com/rickprice/rust-forth-tokenizer"
+keywords = ["forth","tokenizer"]
+categories = ["embedded"]
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 
-[build-dependencies]
-failure = "0.1.5"
-rflex = "0.5.0"
+[features]

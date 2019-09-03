@@ -1,6 +1,5 @@
-mod test {
-    include!(concat!(env!("OUT_DIR"), "/test.rs"));
-}
+use rust_forth_tokenizer::ForthTokenizer;
+use rust_forth_tokenizer::ForthToken;
 use std::env;
 use std::fs;
 fn main() {
@@ -8,20 +7,8 @@ fn main() {
     for file in &args[1..] {
         let file_string = fs::read_to_string(file).expect("Failure opening file");
 
-        let mut lex = test::Lexer::new(&file_string, test::SpaceCounter::new());
-        loop {
-            let res = lex.yylex();
-            println!("{:?}", res);
-            if lex.is_eof() {
-                break;
-            }
-
-            if res.is_err() {
-                break;
-            }
-
-            println!("remain '{}' characters", lex.remain());
+        for token in ForthTokenizer::new(&file_string) {
+            println!("Token is: {:?}", token);
         }
-        println!("space count: {}", lex.get_space_counter().count());
     }
 }
