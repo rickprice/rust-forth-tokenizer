@@ -41,7 +41,7 @@ impl<'a> Iterator for ForthTokenizer<'a> {
         if let Some(c) = check_this.chars().next() {
             return match c {
                 '\\' => {
-                    let mut line_iterator = check_this.splitn(2, |c| c == '\n' || c == '\r');
+                    let mut line_iterator = check_this.splitn(2, &['\n', '\r'][..]);
                     if let Some(comment) = line_iterator.next() {
                         if let Some(rest) = line_iterator.next() {
                             match rest.chars().next().unwrap() {
@@ -82,6 +82,23 @@ impl<'a> ForthTokenizer<'a> {
             curr: 0,
             count: 0,
         }
+    }
+}
+
+fn split_at_newline<'a>(to_split: &'a str) -> (&'a str, &'a str) {
+    let mut line_iterator = to_split.splitn(2, &['\n', '\r'][..]);
+    if let Some(first) = line_iterator.next() {
+        if let Some(rest) = line_iterator.next() {
+            return match rest.chars().next().unwrap() {
+                '\n' => return (first, &rest[1..]),
+                _ => return (first, rest),
+            };
+        } else {
+            return ("", "");
+        }
+        return (first, "");
+    } else {
+        return ("", "");
     }
 }
 
