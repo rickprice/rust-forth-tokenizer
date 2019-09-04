@@ -18,9 +18,8 @@ pub enum ForthToken<'a> {
 
 pub struct ForthTokenizer<'a> {
     to_tokenize: &'a str,
-    curr: i64,
-    next: i64,
-    count: i64,
+    curr: usize,
+    count: i32,
 }
 
 // The `Iterator` trait only requires a method to be defined for the `next` element.
@@ -36,15 +35,15 @@ impl<'a> Iterator for ForthTokenizer<'a> {
             return None;
         }
 
-        let new_next = self.curr + self.next;
+        let curr_curr = self.curr;
+        let new_curr = curr_curr + 30;
+        self.curr = new_curr;
 
-        self.curr = self.next;
-        self.next = new_next;
         self.count += 1;
 
         // Since there's no endpoint to a Fibonacci sequence, the `Iterator`
         // will never return `None`, and `Some` is always returned.
-        Some(ForthToken::Comment(&self.to_tokenize[0..5]))
+        Some(ForthToken::Comment(&self.to_tokenize[curr_curr..new_curr]))
     }
 }
 
@@ -53,7 +52,6 @@ impl<'a> ForthTokenizer<'a> {
         ForthTokenizer {
             to_tokenize: to_tokenize,
             curr: 0,
-            next: 0,
             count: 0,
         }
     }
