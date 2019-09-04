@@ -34,6 +34,32 @@ impl<'a> Iterator for ForthTokenizer<'a> {
         if self.count > 5 {
             return None;
         }
+        self.count += 1;
+
+        let check_this = &self.to_tokenize[self.curr..];
+
+        if let Some(c) = check_this.chars().next() {
+            return match c {
+                '\\' => {
+                    let mut line_iterator = check_this.splitn(2, |c| c == '\n' || c == '\r');
+                    if let Some(comment) = line_iterator.next() {
+                        if let Some(rest) = line_iterator.next() {
+                            // +++ FIX THIS +++ Have to handle the \r here...
+                            self.to_tokenize = rest;
+                        } else {
+                            self.to_tokenize = "";
+                        }
+                        return Some(ForthToken::Comment(comment));
+                    } else {
+                        self.to_tokenize = "";
+                        return None;
+                    }
+                }
+                _ => None,
+            };
+        } else {
+            return None;
+        }
 
         let curr_curr = self.curr;
         let new_curr = curr_curr + 30;

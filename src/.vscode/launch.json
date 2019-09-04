@@ -8,8 +8,10 @@
             "name": "(Windows) Launch",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/../target/debug/rust_forth_tokenizer.exe",
-            "args": [],
+            "program": "${workspaceRoot}/../target/debug/rust-forth-tokenizer.exe",
+            "args": [
+                "${workspaceRoot}/../pforth_forth_samples/ansilocs.fth"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
