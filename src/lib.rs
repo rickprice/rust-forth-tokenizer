@@ -44,8 +44,10 @@ impl<'a> Iterator for ForthTokenizer<'a> {
                     let mut line_iterator = check_this.splitn(2, |c| c == '\n' || c == '\r');
                     if let Some(comment) = line_iterator.next() {
                         if let Some(rest) = line_iterator.next() {
-                            // +++ FIX THIS +++ Have to handle the \r here...
-                            self.to_tokenize = rest;
+                            match rest.chars().next().unwrap() {
+                                '\n' => self.to_tokenize = &rest[1..],
+                                _ => self.to_tokenize = rest,
+                            }
                         } else {
                             self.to_tokenize = "";
                         }
