@@ -7,10 +7,9 @@
 pub enum ForthToken<'a> {
     Number(i64),
     Command(&'a str),
+    StringToken(&'a str),
     Colon,
     SemiColon,
-    DeleteMeNOP,
-    Error(&'a str),
     Comment(&'a str),
     DeleteMeLocalDef(&'a str),
 }
@@ -28,6 +27,8 @@ impl<'a> Iterator for ForthTokenizer<'a> {
     //     * When the `Iterator` is finished, `None` is returned.
     //     * Otherwise, the next value is wrapped in `Some` and returned.
     fn next(&mut self) -> Option<ForthToken<'a>> {
+        self.to_tokenize = self.to_tokenize.trim_start();
+
         if let Some(c) = self.to_tokenize.chars().next() {
             return match c {
                 '\\' => {
@@ -47,6 +48,11 @@ impl<'a> Iterator for ForthTokenizer<'a> {
                     let (first, rest) = split_at_token(self.to_tokenize, ')');
                     self.to_tokenize = rest;
                     Some(ForthToken::DeleteMeLocalDef(first))
+                }
+                '"' => {
+                    let (first, rest) = split_at_token(self.to_tokenize, '"');
+                    self.to_tokenize = rest;
+                    Some(ForthToken::StringToken(first))
                 }
                 _ => {
                     let to_tokenize = self.to_tokenize.trim_start();
