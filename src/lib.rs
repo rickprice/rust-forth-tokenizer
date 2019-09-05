@@ -17,8 +17,6 @@ pub enum ForthToken<'a> {
 
 pub struct ForthTokenizer<'a> {
     to_tokenize: &'a str,
-    curr: usize,
-    count: i32,
 }
 
 // The `Iterator` trait only requires a method to be defined for the `next` element.
@@ -30,7 +28,6 @@ impl<'a> Iterator for ForthTokenizer<'a> {
     //     * When the `Iterator` is finished, `None` is returned.
     //     * Otherwise, the next value is wrapped in `Some` and returned.
     fn next(&mut self) -> Option<ForthToken<'a>> {
-
         if let Some(c) = self.to_tokenize.chars().next() {
             return match c {
                 '\\' => {
@@ -68,8 +65,6 @@ impl<'a> ForthTokenizer<'a> {
     pub fn new(to_tokenize: &'a str) -> ForthTokenizer<'a> {
         ForthTokenizer {
             to_tokenize: to_tokenize,
-            curr: 0,
-            count: 0,
         }
     }
 }
@@ -91,7 +86,7 @@ fn split_at_newline<'a>(to_split: &'a str) -> (&'a str, &'a str) {
 }
 
 fn split_at_ascii_whitespace<'a>(to_split: &'a str) -> (&'a str, &'a str) {
-    let mut line_iterator = to_split.splitn(2, |c:char| c.is_ascii_whitespace());
+    let mut line_iterator = to_split.splitn(2, |c: char| c.is_ascii_whitespace());
     if let Some(first) = line_iterator.next() {
         if let Some(rest) = line_iterator.next() {
             return match rest.chars().next().unwrap() {
