@@ -1,7 +1,3 @@
-//mod error;
-
-//use std::collections::HashMap;
-
 /// This Enum lists the token types that are used by the Forth interpreter
 #[derive(Debug)]
 pub enum ForthToken<'a> {
@@ -10,8 +6,8 @@ pub enum ForthToken<'a> {
     StringToken(&'a str),
     Colon,
     SemiColon,
-    Comment(&'a str),
-    DeleteMeLocalDef(&'a str),
+    DropLineComment(&'a str),
+    ParenthesizedRemark(&'a str),
 }
 
 pub struct ForthTokenizer<'a> {
@@ -22,11 +18,11 @@ pub struct ForthTokenizer<'a> {
 impl<'a> Iterator for ForthTokenizer<'a> {
     type Item = ForthToken<'a>;
 
-    // Here, we define the sequence using `.curr` and `.next`.
     // The return type is `Option<T>`:
     //     * When the `Iterator` is finished, `None` is returned.
     //     * Otherwise, the next value is wrapped in `Some` and returned.
     fn next(&mut self) -> Option<ForthToken<'a>> {
+        // We ignore whitespace
         self.to_tokenize = self.to_tokenize.trim_start();
 
         if let Some(c) = self.to_tokenize.chars().next() {
@@ -34,7 +30,7 @@ impl<'a> Iterator for ForthTokenizer<'a> {
                 '\\' => {
                     let (first, rest) = split_at_newline(self.to_tokenize);
                     self.to_tokenize = rest;
-                    Some(ForthToken::Comment(first))
+                    Some(ForthToken::DropLineComment(first))
                 }
                 ':' => {
                     self.to_tokenize = &self.to_tokenize[1..];
@@ -47,16 +43,17 @@ impl<'a> Iterator for ForthTokenizer<'a> {
                 '(' => {
                     let (first, rest) = split_at_token(self.to_tokenize, ')');
                     self.to_tokenize = rest;
-                    Some(ForthToken::DeleteMeLocalDef(first))
+                    Some(ForthToken::ParenthesizedRemark(first))
                 }
-                '"' => {
-                    let (first, rest) = split_at_token(self.to_tokenize, '"');
-                    self.to_tokenize = rest;
-                    Some(ForthToken::StringToken(first))
-                }
+                /* +++ CHECK THIS +++ We haven't implemented strings yet...
+                                '"' => {
+                                    let (first, rest) = split_at_token(&self.to_tokenize[1..], '"');
+                                    self.to_tokenize = rest;
+                                    Some(ForthToken::StringToken(first))
+                                }
+                */
                 _ => {
-                    let to_tokenize = self.to_tokenize.trim_start();
-                    let (start, rest) = split_at_ascii_whitespace(to_tokenize);
+                    let (start, rest) = split_at_ascii_whitespace(self.to_tokenize);
                     self.to_tokenize = rest;
                     Some(ForthToken::Command(start))
                 }
