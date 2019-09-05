@@ -30,9 +30,8 @@ impl<'a> Iterator for ForthTokenizer<'a> {
     //     * When the `Iterator` is finished, `None` is returned.
     //     * Otherwise, the next value is wrapped in `Some` and returned.
     fn next(&mut self) -> Option<ForthToken<'a>> {
-        let check_this = &self.to_tokenize[self.curr..];
 
-        if let Some(c) = check_this.chars().next() {
+        if let Some(c) = self.to_tokenize.chars().next() {
             return match c {
                 '\\' => {
                     let (first, rest) = split_at_newline(self.to_tokenize);
