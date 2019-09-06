@@ -10,5 +10,7 @@ fn main() {
         for token in ForthTokenizer::new(&file_string) {
             println!("Token is: {:?}", token);
         }
+
+        let collected = ForthTokenizer::new(&file_string).collect();
     }
 }

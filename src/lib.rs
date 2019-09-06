@@ -14,8 +14,31 @@ pub struct ForthTokenizer<'a> {
     to_tokenize: &'a str,
 }
 
+impl<'a> ForthTokenizer<'a> {
+    pub fn new(to_tokenize: &'a str) -> ForthTokenizer<'a> {
+        ForthTokenizer {
+            to_tokenize: to_tokenize,
+        }
+    }
+}
+
+impl<'a> IntoIterator for ForthTokenizer<'a> {
+    type Item = ForthToken<'a>;
+    type IntoIter = ForthTokenizerIntoIterator<'a>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        ForthTokenizerIntoIterator {
+            forth_tokenizer: self,
+        }
+    }
+}
+
+pub struct ForthTokenizerIntoIterator<'a> {
+    forth_tokenizer: ForthTokenizer<'a>,
+}
+
 // The `Iterator` trait only requires a method to be defined for the `next` element.
-impl<'a> Iterator for ForthTokenizer<'a> {
+impl<'a> Iterator for ForthTokenizerIntoIterator<'a> {
     type Item = ForthToken<'a>;
 
     // The return type is `Option<T>`:
@@ -23,26 +46,26 @@ impl<'a> Iterator for ForthTokenizer<'a> {
     //     * Otherwise, the next value is wrapped in `Some` and returned.
     fn next(&mut self) -> Option<ForthToken<'a>> {
         // We ignore whitespace
-        self.to_tokenize = self.to_tokenize.trim_start();
+        self.forth_tokenizer.to_tokenize = self.forth_tokenizer.to_tokenize.trim_start();
 
-        if let Some(c) = self.to_tokenize.chars().next() {
+        if let Some(c) = self.forth_tokenizer.to_tokenize.chars().next() {
             return match c {
                 '\\' => {
-                    let (first, rest) = split_at_newline(self.to_tokenize);
-                    self.to_tokenize = rest;
+                    let (first, rest) = split_at_newline(self.forth_tokenizer.to_tokenize);
+                    self.forth_tokenizer.to_tokenize = rest;
                     Some(ForthToken::DropLineComment(first))
                 }
                 ':' => {
-                    self.to_tokenize = &self.to_tokenize[1..];
+                    self.forth_tokenizer.to_tokenize = &self.forth_tokenizer.to_tokenize[1..];
                     Some(ForthToken::Colon)
                 }
                 ';' => {
-                    self.to_tokenize = &self.to_tokenize[1..];
+                    self.forth_tokenizer.to_tokenize = &self.forth_tokenizer.to_tokenize[1..];
                     Some(ForthToken::SemiColon)
                 }
                 '(' => {
-                    let (first, rest) = split_at_token(self.to_tokenize, ')');
-                    self.to_tokenize = rest;
+                    let (first, rest) = split_at_token(self.forth_tokenizer.to_tokenize, ')');
+                    self.forth_tokenizer.to_tokenize = rest;
                     Some(ForthToken::ParenthesizedRemark(first))
                 }
                 /* +++ CHECK THIS +++ We haven't implemented strings yet...
@@ -53,21 +76,13 @@ impl<'a> Iterator for ForthTokenizer<'a> {
                                 }
                 */
                 _ => {
-                    let (start, rest) = split_at_ascii_whitespace(self.to_tokenize);
-                    self.to_tokenize = rest;
+                    let (start, rest) = split_at_ascii_whitespace(self.forth_tokenizer.to_tokenize);
+                    self.forth_tokenizer.to_tokenize = rest;
                     Some(ForthToken::Command(start))
                 }
             };
         } else {
             return None;
-        }
-    }
-}
-
-impl<'a> ForthTokenizer<'a> {
-    pub fn new(to_tokenize: &'a str) -> ForthTokenizer<'a> {
-        ForthTokenizer {
-            to_tokenize: to_tokenize,
         }
     }
 }
