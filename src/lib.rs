@@ -78,7 +78,13 @@ impl<'a> Iterator for ForthTokenizerIntoIterator<'a> {
                 _ => {
                     let (start, rest) = split_at_ascii_whitespace(self.to_tokenize);
                     self.to_tokenize = rest;
-                    Some(ForthToken::Command(start))
+                    // Determine if its a number or a command
+                    match start.parse::<i64>() {
+                        // We found a number, then return it as a number token
+                        Ok(n) => Some(ForthToken::Number(n)),
+                        // Wasn't a number, treat it as a *word*
+                        Err(_) => Some(ForthToken::Command(start)),
+                    }
                 }
             };
         } else {
