@@ -11,6 +11,8 @@ fn main() {
             println!("Token is: {:?}", token);
         }
 
-        let collected = ForthTokenizer::new(&file_string).collect();
+        let tokenizer = ForthTokenizer::new(&file_string);
+        let collected: Vec<_> = tokenizer.into_iter().collect();
+        println!("Tokenized vector is: {:?}", collected);
     }
 }
