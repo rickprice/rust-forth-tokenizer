@@ -4,7 +4,7 @@ pub enum ForthToken<'a> {
     Number(i64),
     Command(&'a str),
     // Command, string
-    StringToken(&'a str, &'a str),
+    StringCommand(&'a str, &'a str),
     Colon,
     SemiColon,
     DropLineComment(&'a str),
@@ -69,13 +69,6 @@ impl<'a> Iterator for ForthTokenizerIntoIterator<'a> {
                     self.to_tokenize = rest;
                     Some(ForthToken::ParenthesizedRemark(first))
                 }
-                /* +++ CHECK THIS +++ We haven't implemented strings yet...
-                                '"' => {
-                                    let (first, rest) = split_at_token(&self.to_tokenize[1..], '"');
-                                    self.to_tokenize = rest;
-                                    Some(ForthToken::StringToken(first))
-                                }
-                */
                 _ => {
                     let (start, rest) = split_at_ascii_whitespace(self.to_tokenize);
                     self.to_tokenize = rest;
