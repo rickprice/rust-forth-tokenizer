@@ -1,5 +1,5 @@
 /// This Enum lists the token types that are used by the Forth interpreter
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum ForthToken<'a> {
     Number(i64),
     Command(&'a str),
@@ -76,7 +76,10 @@ impl<'a> Iterator for ForthTokenizerIntoIterator<'a> {
                     if start.ends_with('"') {
                         let (newstart, newrest) = split_at_token(rest, '"');
                         self.to_tokenize = newrest;
-                        return Some(ForthToken::StringToken(&start[..start.len() - 1], newstart));
+                        return Some(ForthToken::StringCommand(
+                            &start[..start.len() - 1],
+                            newstart,
+                        ));
                     }
                     // Determine if its a number or a command
                     match start.parse::<i64>() {
@@ -190,5 +193,24 @@ mod tests {
             ("abc", "def\nghi\njkl")
         );
         assert_eq!(split_at_newline(""), ("", ""));
+    }
+    #[test]
+    fn test_bug_1() {
+        let tokenizer = ForthTokenizer::new("1 1 1\n2 2 2\n3 3 3");
+        let collected: Vec<_> = tokenizer.into_iter().collect();
+        assert_eq!(
+            &collected,
+            &vec![
+                ForthToken::Number(1),
+                ForthToken::Number(1),
+                ForthToken::Number(1),
+                ForthToken::Number(2),
+                ForthToken::Number(2),
+                ForthToken::Number(2),
+                ForthToken::Number(3),
+                ForthToken::Number(3),
+                ForthToken::Number(3)
+            ]
+        );
     }
 }
