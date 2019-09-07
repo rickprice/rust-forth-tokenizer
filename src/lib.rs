@@ -3,7 +3,8 @@
 pub enum ForthToken<'a> {
     Number(i64),
     Command(&'a str),
-    StringToken(&'a str),
+    // Command, string
+    StringToken(&'a str, &'a str),
     Colon,
     SemiColon,
     DropLineComment(&'a str),
@@ -78,6 +79,12 @@ impl<'a> Iterator for ForthTokenizerIntoIterator<'a> {
                 _ => {
                     let (start, rest) = split_at_ascii_whitespace(self.to_tokenize);
                     self.to_tokenize = rest;
+
+                    if start.ends_with('"') {
+                        let (newstart, newrest) = split_at_token(rest, '"');
+                        self.to_tokenize = newrest;
+                        return Some(ForthToken::StringToken(&start[..start.len() - 1], newstart));
+                    }
                     // Determine if its a number or a command
                     match start.parse::<i64>() {
                         // We found a number, then return it as a number token
