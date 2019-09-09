@@ -324,7 +324,6 @@ mod tests {
 
     #[test]
     fn test_droplinecomment_2() {
-        // Forgot the space after the 2, this will come out totally differently than a comment
         let tokenizer = ForthTokenizer::new("1 2 \\ This is a dropline comment\n\r1 3\r\n4");
         let collected: Vec<_> = tokenizer.into_iter().collect();
         assert_eq!(
