@@ -76,6 +76,12 @@ impl<'a> Iterator for ForthTokenizerIntoIterator<'a> {
                     if start.ends_with('"') {
                         let (newstart, newrest) = split_at_token(rest, '"');
                         self.to_tokenize = newrest;
+                        if start == "\"" {
+                        return Some(ForthToken::StringCommand(
+                            &start,
+                            newstart,
+                        ));
+                        }
                         return Some(ForthToken::StringCommand(
                             &start[..start.len() - 1],
                             newstart,
@@ -186,6 +192,7 @@ mod tests {
             ("abc", "def\r\nghi\r\njkl")
         );
     }
+
     #[test]
     fn test_split_at_newline_6() {
         assert_eq!(
@@ -194,6 +201,39 @@ mod tests {
         );
         assert_eq!(split_at_newline(""), ("", ""));
     }
+
+    #[test]
+    fn test_stringcommand_1() {
+        let tokenizer = ForthTokenizer::new("1 2 \" This is a string\" 3 4");
+        let collected: Vec<_> = tokenizer.into_iter().collect();
+        assert_eq!(
+            &collected,
+            &vec![
+                ForthToken::Number(1),
+                ForthToken::Number(2),
+                ForthToken::StringCommand("\"", "This is a string"),
+                ForthToken::Number(3),
+                ForthToken::Number(4),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_stringcommand_2() {
+        let tokenizer = ForthTokenizer::new("1 2 .s\" This is a string\" 3 4");
+        let collected: Vec<_> = tokenizer.into_iter().collect();
+        assert_eq!(
+            &collected,
+            &vec![
+                ForthToken::Number(1),
+                ForthToken::Number(2),
+                ForthToken::StringCommand(".s", "This is a string"),
+                ForthToken::Number(3),
+                ForthToken::Number(4),
+            ]
+        );
+    }
+
     #[test]
     fn test_bug_1() {
         let tokenizer = ForthTokenizer::new("1 1 1\n2 2 2\n3 3 3");
