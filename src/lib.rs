@@ -76,16 +76,8 @@ impl<'a> Iterator for ForthTokenizerIntoIterator<'a> {
                     if start.ends_with('"') {
                         let (newstart, newrest) = split_at_token(rest, '"');
                         self.to_tokenize = newrest;
-                        if start == "\"" {
-                        return Some(ForthToken::StringCommand(
-                            &start,
-                            newstart,
-                        ));
-                        }
-                        return Some(ForthToken::StringCommand(
-                            &start[..start.len() - 1],
-                            newstart,
-                        ));
+
+                        return Some(ForthToken::StringCommand(&start, newstart));
                     }
                     // Determine if its a number or a command
                     match start.parse::<i64>() {
@@ -227,7 +219,7 @@ mod tests {
             &vec![
                 ForthToken::Number(1),
                 ForthToken::Number(2),
-                ForthToken::StringCommand(".s", "This is a string"),
+                ForthToken::StringCommand(".s\"", "This is a string"),
                 ForthToken::Number(3),
                 ForthToken::Number(4),
             ]
