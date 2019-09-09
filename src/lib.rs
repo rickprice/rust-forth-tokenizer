@@ -195,6 +195,80 @@ mod tests {
     }
 
     #[test]
+    fn test_number_1() {
+        let tokenizer = ForthTokenizer::new("1 these 2 are 3 words 4");
+        let collected: Vec<_> = tokenizer.into_iter().collect();
+        assert_eq!(
+            &collected,
+            &vec![
+                ForthToken::Number(1),
+                ForthToken::Command("these"),
+                ForthToken::Number(2),
+                ForthToken::Command("are"),
+                ForthToken::Number(3),
+                ForthToken::Command("words"),
+                ForthToken::Number(4),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_command_1() {
+        let tokenizer = ForthTokenizer::new("these are #words 1 with 2 numbers");
+        let collected: Vec<_> = tokenizer.into_iter().collect();
+        assert_eq!(
+            &collected,
+            &vec![
+                ForthToken::Command("these"),
+                ForthToken::Command("are"),
+                ForthToken::Command("#words"),
+                ForthToken::Number(1),
+                ForthToken::Command("with"),
+                ForthToken::Number(2),
+                ForthToken::Command("numbers"),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_colon_1() {
+        let tokenizer = ForthTokenizer::new("word : wordname 1 2 3 ; definition");
+        let collected: Vec<_> = tokenizer.into_iter().collect();
+        assert_eq!(
+            &collected,
+            &vec![
+                ForthToken::Command("word"),
+                ForthToken::Colon,
+                ForthToken::Command("wordname"),
+                ForthToken::Number(1),
+                ForthToken::Number(2),
+                ForthToken::Number(3),
+                ForthToken::SemiColon,
+                ForthToken::Command("definition"),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_semicolon_1() {
+        let tokenizer = ForthTokenizer::new("word : wordname 1 $whatever 3 ; definition");
+        let collected: Vec<_> = tokenizer.into_iter().collect();
+        assert_eq!(
+            &collected,
+            &vec![
+                ForthToken::Command("word"),
+                ForthToken::Colon,
+                ForthToken::Command("wordname"),
+                ForthToken::Number(1),
+                ForthToken::Command("$whatever"),
+                ForthToken::Number(3),
+                ForthToken::SemiColon,
+                ForthToken::Command("definition"),
+            ]
+        );
+    }
+
+    #[test]
     fn test_stringcommand_1() {
         let tokenizer = ForthTokenizer::new("1 2 \" This is a string\" 3 4");
         let collected: Vec<_> = tokenizer.into_iter().collect();
