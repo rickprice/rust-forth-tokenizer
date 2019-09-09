@@ -340,6 +340,29 @@ mod tests {
     }
 
     #[test]
+    fn test_parenthesized_remark_1() {
+        // This isn't maybe intuitive, but we lose the trailing ) because its a delimiter... No easy way to change that that I know of
+        let tokenizer = ForthTokenizer::new(
+            "1 2 \\ This is a dropline comment ( This is not a parenthesized remark )\n\r1 ( This is in fact a parenthesized remark )3\r\n4",
+        );
+        let collected: Vec<_> = tokenizer.into_iter().collect();
+        assert_eq!(
+            &collected,
+            &vec![
+                ForthToken::Number(1),
+                ForthToken::Number(2),
+                ForthToken::DropLineComment(
+                    "\\ This is a dropline comment ( This is not a parenthesized remark )"
+                ),
+                ForthToken::Number(1),
+                ForthToken::ParenthesizedRemark("( This is in fact a parenthesized remark "),
+                ForthToken::Number(3),
+                ForthToken::Number(4),
+            ]
+        );
+    }
+
+    #[test]
     fn test_bug_1() {
         let tokenizer = ForthTokenizer::new("1 1 1\n2 2 2\n3 3 3");
         let collected: Vec<_> = tokenizer.into_iter().collect();
