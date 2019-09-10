@@ -1,3 +1,26 @@
+/// This is how to use the Forth tokenizer library
+/// ```
+/// use rust_forth_tokenizer::ForthToken;
+/// use rust_forth_tokenizer::ForthTokenizer;
+///
+///     let tokenizer = ForthTokenizer::new("word : wordname 1 2 3 ; definition");
+///     // The code also supports the regular for loop iterator syntax
+///     let collected: Vec<_> = tokenizer.into_iter().collect();
+///     assert_eq!(
+///            &collected,
+///            &vec![
+///                ForthToken::Command("word"),
+///                ForthToken::Colon,
+///                ForthToken::Command("wordname"),
+///                ForthToken::Number(1),
+///                ForthToken::Number(2),
+///                ForthToken::Number(3),
+///                ForthToken::SemiColon,
+///                ForthToken::Command("definition"),
+///            ]
+///        );
+/// ```
+
 /// This Enum lists the token types that are used by the Forth interpreter
 #[derive(Debug, PartialEq)]
 pub enum ForthToken<'a> {
@@ -11,6 +34,7 @@ pub enum ForthToken<'a> {
     ParenthesizedRemark(&'a str),
 }
 
+/// This is the ForthTokenizer, it is the actual tokenizer
 pub struct ForthTokenizer<'a> {
     to_tokenize: &'a str,
 }
