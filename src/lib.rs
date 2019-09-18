@@ -41,9 +41,7 @@ pub struct ForthTokenizer<'a> {
 
 impl<'a> ForthTokenizer<'a> {
     pub fn new(to_tokenize: &'a str) -> ForthTokenizer<'a> {
-        ForthTokenizer {
-            to_tokenize: to_tokenize,
-        }
+        ForthTokenizer { to_tokenize }
     }
 }
 
@@ -74,7 +72,7 @@ impl<'a> Iterator for ForthTokenizerIntoIterator<'a> {
         self.to_tokenize = self.to_tokenize.trim_start();
 
         if let Some(c) = self.to_tokenize.chars().next() {
-            return match c {
+            match c {
                 '\\' => {
                     let (first, rest) = split_at_newline(self.to_tokenize);
                     self.to_tokenize = rest;
@@ -111,9 +109,9 @@ impl<'a> Iterator for ForthTokenizerIntoIterator<'a> {
                         Err(_) => Some(ForthToken::Command(start)),
                     }
                 }
-            };
+            }
         } else {
-            return None;
+            None
         }
     }
 }
@@ -133,15 +131,15 @@ fn split_at_newline<'a>(to_split: &'a str) -> (&'a str, &'a str) {
     let mut line_iterator = to_split.splitn(2, &['\n', '\r'][..]);
     if let Some(first) = line_iterator.next() {
         if let Some(rest) = line_iterator.next() {
-            return match rest.chars().next().unwrap() {
+            match rest.chars().next().unwrap() {
                 '\n' => (first, &rest[1..]),
                 _ => (first, rest),
-            };
+            }
         } else {
-            return (first, "");
+            (first, "")
         }
     } else {
-        return ("", "");
+        ("", "")
     }
 }
 
@@ -149,15 +147,15 @@ fn split_at_ascii_whitespace<'a>(to_split: &'a str) -> (&'a str, &'a str) {
     let mut line_iterator = to_split.splitn(2, |c: char| c.is_ascii_whitespace());
     if let Some(first) = line_iterator.next() {
         if let Some(rest) = line_iterator.next() {
-            return match rest.chars().next().unwrap() {
+            match rest.chars().next().unwrap() {
                 '\n' => (first, &rest[1..]),
                 _ => (first, rest),
-            };
+            }
         } else {
-            return (first, "");
+            (first, "")
         }
     } else {
-        return ("", "");
+        ("", "")
     }
 }
 
@@ -165,15 +163,15 @@ fn split_at_token<'a>(to_split: &'a str, token: char) -> (&'a str, &'a str) {
     let mut line_iterator = to_split.splitn(2, token);
     if let Some(first) = line_iterator.next() {
         if let Some(rest) = line_iterator.next() {
-            return match rest.chars().next().unwrap() {
+            match rest.chars().next().unwrap() {
                 '\n' => (first, &rest[1..]),
                 _ => (first, rest),
-            };
+            }
         } else {
-            return (first, "");
+            (first, "")
         }
     } else {
-        return ("", "");
+        ("", "")
     }
 }
 
