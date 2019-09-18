@@ -127,7 +127,7 @@ impl<'a> IntoIterator for &'a ForthTokenizer<'a> {
     }
 }
 
-fn split_at_newline<'a>(to_split: &'a str) -> (&'a str, &'a str) {
+fn split_at_newline(to_split: &str) -> (&str, &str) {
     let mut line_iterator = to_split.splitn(2, &['\n', '\r'][..]);
     if let Some(first) = line_iterator.next() {
         if let Some(rest) = line_iterator.next() {
@@ -143,7 +143,7 @@ fn split_at_newline<'a>(to_split: &'a str) -> (&'a str, &'a str) {
     }
 }
 
-fn split_at_ascii_whitespace<'a>(to_split: &'a str) -> (&'a str, &'a str) {
+fn split_at_ascii_whitespace(to_split: &str) -> (&str, &str) {
     let mut line_iterator = to_split.splitn(2, |c: char| c.is_ascii_whitespace());
     if let Some(first) = line_iterator.next() {
         if let Some(rest) = line_iterator.next() {
@@ -159,7 +159,7 @@ fn split_at_ascii_whitespace<'a>(to_split: &'a str) -> (&'a str, &'a str) {
     }
 }
 
-fn split_at_token<'a>(to_split: &'a str, token: char) -> (&'a str, &'a str) {
+fn split_at_token(to_split: &str, token: char) -> (&str, &str) {
     let mut line_iterator = to_split.splitn(2, token);
     if let Some(first) = line_iterator.next() {
         if let Some(rest) = line_iterator.next() {
