@@ -1,8 +1,8 @@
 [package]
 name = "rust-forth-tokenizer"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Frederick Price <rprice@pricemail.ca>"]
-edition = "2018"
+edition = "2024"
 license = "MIT"
 description = "A Forth tokenizer written in Rust."
 homepage = "https://github.com/rickprice/rust-forth-tokenizer"
